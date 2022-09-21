@@ -981,6 +981,60 @@ echo.
 
 @REM AFTER THE USER SELECTS THEIR DESIRED RADAR CLIENT, THE STARTUP (STDSTUP) PROCESS STARTS HERE.
 
+@REM PLAY SOME SWEET TUNES
+CD /D "%userprofile%\Documents\ATC Workstation Setup CFG"
+	IF EXIST "MUSIC_OPTIONS.txt" GOTO MUSIC_CHOICE
+GOTO AFTER_MUSIC
+
+:MUSIC_CHOICE
+
+SET MUSIC_OPTIONS=MUSIC_OPTIONS.txt
+
+CLS
+
+echo.
+echo.
+echo ---------------------------------------------------
+echo.
+echo   Select the location where you will be controlling:
+SET COUNT=0
+for /f "delims=" %%a in (%MUSIC_OPTIONS%) do (
+    @REM echo Read line: %%a
+    IF not defined SONGS[!COUNT!].Place (
+        @REM echo   Setting place: %%a
+        SET SONGS[!COUNT!].Place=%%a
+    ) ELSE (
+        @REM echo   Setting song: %%a
+        SET SONGS[!COUNT!].File=%%a
+        @REM call echo     This song: %%SONGS[!COUNT!].Place%%: %%SONGS[!COUNT!].File%%
+        call echo %COUNT%: %%SONGS[!COUNT!].Place%%
+        set /a COUNT+=1
+    )
+    
+)
+echo.
+echo ---------------------------------------------------
+echo.
+echo.
+
+	set /p ControlLoc=Type your choice and press Enter: 
+
+	IF defined SONGS[%ControlLoc%].File GOTO MUSIC
+	echo.
+	echo.
+	echo.
+	echo.
+	echo  %ControlLoc% IS NOT A RECOGNIZED RESPONSE. No music for you.
+	echo.
+GOTO AFTER_MUSIC
+
+:MUSIC
+
+call echo Trying to play %%SONGS[!ControlLoc!].File%%
+call START "" "%%SONGS[!ControlLoc!].File%%"
+
+:AFTER_MUSIC
+
 IF EXIST "%userprofile%\Dropbox\ZSE public\Other Downloads\ZSE_LUFL.bat" GOTO LUFL_START
 	GOTO VATSPY_STRT
 
